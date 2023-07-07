@@ -1,4 +1,5 @@
 function handleFile() {
+  // read the csv file after taking it as input
   var fileInput = document.getElementById("csvFileInput");
   var file = fileInput.files[0];
   var reader = new FileReader();
@@ -16,11 +17,11 @@ function handleFile() {
       dataByHeaders[headers[i]] = {};
     }
 
-// Process each line of data
+// Parse through each line of data
     for (var i = 1; i < lines.length; i++) {
       var line = lines[i].split(",");
 
-  // Assign values to corresponding headers
+  // Assign values to the headers
       for (var j = 1; j < headers.length; j++) {
         var xHeader = headers[j];
         var yHeader = line[0];
@@ -36,7 +37,7 @@ function handleFile() {
       }
     }
 
-// Print Events and calculate total value
+// Print Events to the console and calculate total value of all values together
     var totalValue = 0;
     for (var xHeader in dataByHeaders) {
       console.log(xHeader + ":");
@@ -59,6 +60,7 @@ function handleFile() {
 
       var sectionSizes = [];
       var labels = [];
+      //calculate the total value and store original values
       var ogValues = [];
       for (var yHeader of yHeaders) {
         var value = dataByHeaders[xHeader][yHeader];
@@ -104,7 +106,7 @@ function handleFile() {
 var barData = [];
 
 var colorIndex = 0;
-
+// parse through data
 for (var xHeader in dataByHeaders) {
   var yHeaders = Object.keys(dataByHeaders[xHeader]);
   var values = [];
@@ -115,6 +117,7 @@ for (var xHeader in dataByHeaders) {
       var value = dataByHeaders[xHeader][yHeader];
       values.push(value);
     }
+    // sort data, then flip it since smallest comes before largest
     var sortedIndices = values.map(function (_, index) {
       return index;
     }).sort(function (a, b) {
@@ -133,6 +136,7 @@ for (var xHeader in dataByHeaders) {
   var barTrace = {
     y: yHeaders,
     x: values,
+    // probably a better way to determine bar's width
     width: [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 
       0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 
       0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7 ],
@@ -184,24 +188,28 @@ var barLayout = {
   }
 };
 
-
+//add click function to highlight a specific bar
+// this is in an unfinished state. There are bugs here and
+// more optimization that needs to be done but for now the
+// basics have been completed
 Plotly.newPlot('barChartContainer', barData, barLayout).then(function() {
   var barChart = document.getElementById('barChartContainer');
-  var isClicked = false; // Track the click state
+  var isClicked = false; 
   
   barChart.on('plotly_click', function(data) {
     if (isClicked) {
       // If already clicked, revert all bars to blue
-      var colors = Array(barData.length).fill('rgba(31, 119, 180, 0.8)'); // Blue color
+      var colors = Array(barData.length).fill('rgba(31, 119, 180, 0.8)');
       var update = {
         marker: { color: colors }
       };
       Plotly.update('barChartContainer', update);
-      isClicked = false; // Reset click state
+      isClicked = false; //reset click state
     } else {
       // If not clicked, change clicked bar to green
       var clickedIndex = data.points[0].pointIndex;
-      var colors = Array(barData.length).fill('rgba(31, 119, 180, 0.8)'); // Blue color
+     // this is supposed to change other bars to blue but is currently only doing it to the final bar on the chart
+      var colors = Array(barData.length).fill('rgba(31, 119, 180, 0.8)'); 
       colors[clickedIndex] = 'green';
       var update = {
         marker: { color: colors }
@@ -218,7 +226,8 @@ Plotly.newPlot('barChartContainer', barData, barLayout).then(function() {
   reader.readAsText(file);
 }
 
-
+// fun additional graphs I created are below, but they do not use
+// any dataset and are not nearly as complex
 function createLine() {
 
   var trace1 = {
