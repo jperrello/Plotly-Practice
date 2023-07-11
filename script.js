@@ -17,7 +17,7 @@ function handleFile() {
       dataByHeaders[headers[i]] = {};
     }
 
-// Parse through each line of data
+// parse through each line of data
     for (var i = 1; i < lines.length; i++) {
       var line = lines[i].split(",");
 
@@ -37,7 +37,8 @@ function handleFile() {
       }
     }
 
-// Print Events to the console and calculate total value of all values together
+// Print Events to console and calculate total value
+// of all values added together
     var totalValue = 0;
     for (var xHeader in dataByHeaders) {
       console.log(xHeader + ":");
@@ -60,7 +61,6 @@ function handleFile() {
 
       var sectionSizes = [];
       var labels = [];
-      //calculate the total value and store original values
       var ogValues = [];
       for (var yHeader of yHeaders) {
         var value = dataByHeaders[xHeader][yHeader];
@@ -102,6 +102,7 @@ function handleFile() {
     };
 
     Plotly.newPlot('pieChartContainer', pieData, layout);
+
 //bar graph
 var barData = [];
 
@@ -117,7 +118,7 @@ for (var xHeader in dataByHeaders) {
       var value = dataByHeaders[xHeader][yHeader];
       values.push(value);
     }
-    // sort data, then flip it since smallest comes before largest
+    //sort data, then flip it since smallest comes before largest when sorting
     var sortedIndices = values.map(function (_, index) {
       return index;
     }).sort(function (a, b) {
@@ -136,7 +137,6 @@ for (var xHeader in dataByHeaders) {
   var barTrace = {
     y: yHeaders,
     x: values,
-    // probably a better way to determine bar's width
     width: [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 
       0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 
       0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7 ],
@@ -163,7 +163,7 @@ var barLayout = {
   width: 1200,
   height: 1000,
   lines: false,
-  color: 'blue',
+  color: 'rgba(31, 119, 180, 0.8)',
   xaxis: {
     title: headers[1],
     Range: [0, 2200],
@@ -188,37 +188,39 @@ var barLayout = {
   }
 };
 
-//add click function to highlight a specific bar
-// this is in an unfinished state. There are bugs here and
-// more optimization that needs to be done but for now the
-// basics have been completed
+
 Plotly.newPlot('barChartContainer', barData, barLayout).then(function() {
   var barChart = document.getElementById('barChartContainer');
-  var isClicked = false; 
-  
+  var colors = Array.from({ length: yHeaders.length }, () => 'rgba(31, 119, 180, 0.8)'); // Blue color
+
   barChart.on('plotly_click', function(data) {
-    if (isClicked) {
-      // If already clicked, revert all bars to blue
-      var colors = Array(barData.length).fill('rgba(31, 119, 180, 0.8)');
-      var update = {
-        marker: { color: colors }
-      };
-      Plotly.update('barChartContainer', update);
-      isClicked = false; //reset click state
-    } else {
-      // If not clicked, change clicked bar to green
-      var clickedIndex = data.points[0].pointIndex;
-     // this is supposed to change other bars to blue but is currently only doing it to the final bar on the chart
-      var colors = Array(barData.length).fill('rgba(31, 119, 180, 0.8)'); 
-      colors[clickedIndex] = 'green';
-      var update = {
-        marker: { color: colors }
-      };
-      Plotly.update('barChartContainer', update);
-      isClicked = true; // Set click state
-    }
+    var clickedIndex = data.points[0].pointIndex;
+
+    // Reset colors to blue for all bars
+    colors = Array.from({ length: yHeaders.length }, () => 'rgba(31, 119, 180, 0.8)');
+
+    // Set the clicked bar color to green
+    colors[clickedIndex] = 'green';
+
+    var update = {
+      marker: { color: colors }
+    };
+
+    Plotly.update('barChartContainer', update);
+    
+    // showcase the clicked bar's information onto the webpage itself
+    var clickedBarData = data.points[0]; // Get the clicked bar's data directly
+    var clickedBarName = clickedBarData.label;
+    var clickedBarValue = clickedBarData.x;
+    console.log(clickedBarData)
+
+
+    var statement = "Selected Information: " + clickedBarName + "<br>Value: " + clickedBarValue;
+    document.getElementById('outputSelectInfo').innerHTML = statement;
+    document.getElementById('outputSelectInfo').style.border = "2px solid green";
   });
 });
+
 
 
 };
@@ -226,8 +228,9 @@ Plotly.newPlot('barChartContainer', barData, barLayout).then(function() {
   reader.readAsText(file);
 }
 
-// fun additional graphs I created are below, but they do not use
-// any dataset and are not nearly as complex
+//**************************** */
+//      Practice Graphs        */
+//**************************** */
 function createLine() {
 
   var trace1 = {
