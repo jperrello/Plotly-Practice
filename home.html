@@ -10,21 +10,14 @@
         <h1><b>Practicing with Plotly</b></h1>
     </div>
     <input type="file" id="csvFileInput" accept=".csv">
-    <button onclick="handleFile()">Create Some Charts!</button>
-    <div id="output"></div>
-    <div id="pieChartContainer" class="pie_graph_container"></div>
+    <button onclick="handleFile('csvFileInput', 'barChartContainer', 'outputSelectInfo')">Create a Chart!</button>
     <div id="output"></div>
     <div id="barChartContainer" class="bar_graph_container"></div>
+    <div class="container" id="outputSelectInfo"></div>
 
-
-    <button onclick="createLine()">User Activity Over a Year</button>
-    <div id="myDiv2" class="container">
-        <script src="script.js"></script>
-    </div>
-
-    <button onclick="createGeo()">Installs Across Europe</button>
-    <div id="myDiv3" class="container">
-        <script src="script.js"></script>
-    </div>
+    <input type="file" id="smallCsvFileInput" accept=".csv">
+    <button onclick="handleFile('smallCsvFileInput', 'smallBarChartContainer', 'outputSelectSmallInfo')">Create another Chart!</button>
+    <div id="smallBarChartContainer" class="bar_graph_container"></div>
+    <div class="container" id="outputSelectSmallInfo"></div>
 </body>
 </html>
