@@ -165,17 +165,24 @@ function handleFile(fileInputId, chartContainerId, outputInfoId) {
     //actually create graph, but then start adding the clicking bar fucnction
     Plotly.newPlot(chartContainer, barData, barLayout).then(function () {
       var colors = Array.from({ length: yHeaders.length }, () => 'rgba(31, 119, 180, 0.8)');
+      var currentClickedIndex = null;
     
       chartContainer.on('plotly_click', function (data) {
         var clickedIndex = data.points[0].pointIndex;
     
-        // Set the clicked bar color to green or revert back to blue if already clicked
-        if (colors[clickedIndex] === 'green') {
-          colors[clickedIndex] = 'rgba(31, 119, 180, 0.8)';
-        } else {
-          colors[clickedIndex] = 'green';
+        if (currentClickedIndex !== null && currentClickedIndex !== clickedIndex) {
+          colors[currentClickedIndex] = 'rgba(31, 119, 180, 0.8)'; // Revert previously clicked bar to blue
         }
-        //update color array to include clickedIndex's color
+    
+        currentClickedIndex = clickedIndex;
+    
+        if (colors[clickedIndex] === 'green') {
+          colors[clickedIndex] = 'rgba(31, 119, 180, 0.8)'; // Revert current clicked bar to blue
+          currentClickedIndex = null; // Reset current clicked index
+        } else {
+          colors[clickedIndex] = 'green'; // Set current clicked bar to green
+        }
+    
         var update = {
           marker: { color: colors }
         };
@@ -192,7 +199,7 @@ function handleFile(fileInputId, chartContainerId, outputInfoId) {
           var statement = "Selected Information: " + clickedBarName + "<br>Value: " + clickedBarValue;
           outputInfo.innerHTML = statement;
           outputInfo.style.border = "2px solid green";
-        } else { //if the bar has already been clicked, delete info showcased on webpage
+        } else {
           outputInfo.innerHTML = "";
           outputInfo.style.border = "none";
         }
@@ -204,6 +211,7 @@ function handleFile(fileInputId, chartContainerId, outputInfoId) {
     
       Plotly.update(chartContainer, update);
     });
+    
     
   };
 
